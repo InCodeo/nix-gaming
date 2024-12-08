@@ -27,7 +27,7 @@
     open = false;
     nvidiaSettings = true;
     # Use the 470 series driver which is known to work with GTX 970
-    package = config.boot.kernelPackages.nvidia_x11_legacy470;
+    package = pkgs.linuxPackages_6_1.nvidia_x11_legacy470;
     modesetting.enable = true;
     prime.sync.enable = false;
     powerManagement.enable = false;
