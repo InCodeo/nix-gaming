@@ -40,7 +40,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    nvtop
+    nvtopPackages.full  # Updated from nvtop
     glxinfo  # For debugging GPU issues
     vulkan-tools  # For testing Vulkan support
   ];
