@@ -1,37 +1,44 @@
 { config, pkgs, lib, ... }: {
-  # First, disable the default NVIDIA driver
-  hardware.nvidia.package = lib.mkForce null;
+  # Disable all default NVIDIA configuration
+  disabledModules = [ "hardware/video/nvidia.nix" ];
 
-  # Then configure only what we need
+  # Then configure exactly what we want
   hardware.nvidia = {
-    open = false;
+    open = lib.mkForce false;
     nvidiaSettings = true;
-    # Force the legacy package
-    package = lib.mkForce config.boot.kernelPackages.nvidia_x11_legacy470;
+    # Only allow legacy driver
+    package = lib.mkForce (lib.hiPrio pkgs.linuxPackages_6_1.nvidia_x11_legacy470);
     modesetting.enable = true;
     prime.sync.enable = false;
     powerManagement.enable = false;
     forceFullCompositionPipeline = true;
   };
 
-  # Make sure we're using consistent kernel packages
   boot = {
     kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
-    kernelModules = [ "nvidia" ];
-    extraModulePackages = with config.boot.kernelPackages; [ 
-      (lib.mkForce nvidia_x11_legacy470)
-    ];
+    blacklistedKernelModules = [ "nouveau" "nvidia_drm" "nvidia_modeset" "nvidia" ];
+    kernelModules = [ ];
+    extraModulePackages = [ ];
+    # Add this after initial module load
+    initrd.kernelModules = [ "nvidia" ];
+    extraModprobeConfig = ''
+      options nvidia NVreg_RegisterForACPIEvents=1
+    '';
   };
 
-  # Also explicitly disable the newer driver in nixpkgs
+  # Only allow specific version in nixpkgs
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
     nvidia.acceptLicense = true;
+    # Prevent other NVIDIA packages from being built
     packageOverrides = pkgs: {
       linuxPackages_6_1 = pkgs.linuxPackages_6_1.override {
-        nvidia_x11 = null;
+        nvidia_x11 = lib.mkForce null;
       };
     };
   };
+
+  # Make sure X.org knows to use our specific driver
+  services.xserver.videoDrivers = lib.mkForce [ "nvidia" ];
 }
