@@ -21,11 +21,17 @@
         ../system/programs/gamemode.nix
         ../system/programs/games.nix
 
-        # Home-manager config
+        inputs.home-manager.nixosModules.default
         {
           home-manager = {
+            useGlobalPkgs = true;
+            useUserPackages = true;
             users.mihai.imports = [
-              "${self}/home/profiles/io"
+              ../home/default.nix  # Basic user config
+              ../home/editors/helix  # Editor config
+              ../home/programs  # Basic programs
+              ../home/programs/games  # Gaming-specific programs
+              ../home/programs/wayland  # Wayland/Hyprland config
             ];
             extraSpecialArgs = specialArgs;
           };
