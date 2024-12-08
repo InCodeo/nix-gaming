@@ -15,8 +15,8 @@
       # monospace fonts
       jetbrains-mono
 
-      # nerdfonts - using specific packages
-      (nerdfonts.override { fonts = [ "JetBrainsMono" "NerdFontsSymbolsOnly" ]; })
+      # nerdfonts - using new namespace
+      nerd-fonts.jetbrainsmono
     ];
 
     # causes more issues than it solves
