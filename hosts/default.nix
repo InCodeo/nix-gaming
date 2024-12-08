@@ -14,22 +14,21 @@
       inherit specialArgs;
       modules = [
         ./gamestation
-        {
-          imports = self.nixosModules.desktop ++ [
-            # Additional gaming-specific modules
-            "${self}/system/programs/gamemode.nix"
-            "${self}/system/programs/games.nix"
+        # Import desktop modules directly
+        { imports = (import ../system).desktop; }
+        
+        # Gaming-specific modules
+        ../system/programs/gamemode.nix
+        ../system/programs/games.nix
 
-            # Home-manager config
-            {
-              home-manager = {
-                users.mihai.imports = [
-                  "${self}/home/profiles/io"
-                ];
-                extraSpecialArgs = specialArgs;
-              };
-            }
-          ];
+        # Home-manager config
+        {
+          home-manager = {
+            users.mihai.imports = [
+              "${self}/home/profiles/io"
+            ];
+            extraSpecialArgs = specialArgs;
+          };
         }
       ];
     };
