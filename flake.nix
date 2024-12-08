@@ -37,6 +37,11 @@
     };
 
   inputs = {
+    home-manager = {  # Change from 'hm' to 'home-manager'
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # global, so they can be `.follow`ed
     systems.url = "github:nix-systems/default-linux";
 
