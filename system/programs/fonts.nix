@@ -15,8 +15,9 @@
       # monospace fonts
       jetbrains-mono
 
-      # nerdfonts
-      (nerdfonts.override {fonts = ["NerdFontsSymbolsOnly" "JetBrainsMono"];})
+      # nerdfonts - updated to new package format
+      nerd-fonts.symbols
+      (nerd-fonts.override {fonts = ["JetBrainsMono"];})
     ];
 
     # causes more issues than it solves
@@ -31,7 +32,7 @@
       addAll {
         serif = ["Libertinus Serif"];
         sansSerif = ["Inter"];
-        monospace = ["JetBrains Mono Nerd Font"];
+        monospace = ["JetBrainsMono Nerd Font"];
         emoji = [];
       };
   };
