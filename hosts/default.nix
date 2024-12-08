@@ -6,18 +6,14 @@
   flake.nixosConfigurations = let
     inherit (inputs.nixpkgs.lib) nixosSystem;
     
-    # get these into the module system
     specialArgs = {inherit inputs self;};
   in {
-    # Your new gamestation configuration
     gamestation = nixosSystem {
       inherit specialArgs;
       modules = [
         ./gamestation
-        # Import desktop modules directly
         { imports = (import ../system).desktop; }
         
-        # Gaming-specific modules
         ../system/programs/gamemode.nix
         ../system/programs/games.nix
 
@@ -27,11 +23,15 @@
             useGlobalPkgs = true;
             useUserPackages = true;
             users.mihai.imports = [
-              ../home/default.nix  # Basic user config
-              ../home/editors/helix  # Editor config
-              ../home/programs  # Basic programs
-              ../home/programs/games  # Gaming-specific programs
-              ../home/programs/wayland  # Wayland/Hyprland config
+              ../home/default.nix
+              ../home/editors/helix
+              # Let's be specific about which programs we want
+              ../home/programs/browsers/chromium.nix
+              ../home/programs/browsers/firefox.nix
+              ../home/programs/gtk.nix
+              ../home/programs/qt.nix
+              ../home/programs/games
+              ../home/programs/wayland/hyprland
             ];
             extraSpecialArgs = specialArgs;
           };
