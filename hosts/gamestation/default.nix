@@ -5,36 +5,43 @@
   ...
 }: {
   imports = [
-    ./hardware-configuration.nix  # This is crucial for your specific hardware
+    ./hardware-configuration.nix
   ];
 
   boot = {
-    # Using latest kernel for best hardware support
     kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
     
     kernelModules = ["nvidia"];
     extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
   };
 
-  # Essential NVIDIA configuration
+  # Essential NVIDIA configuration - modified for GTX 970
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidia_x11;
+    package = config.boot.kernelPackages.nvidia_x11_legacy470;  # Using legacy driver
     modesetting.enable = true;
+    prime.sync.enable = false;  # Disable PRIME as this is a desktop
+    powerManagement.enable = false;  # Desktop GPU doesn't need power management
   };
+
+  # Allow unfree packages (needed for NVIDIA)
+  nixpkgs.config.allowUnfree = true;
 
   networking.hostName = "gamestation";
 
   services = {
-    # for SSD/NVME
     fstrim.enable = true;
-
-    # X11 support for NVIDIA
-    xserver.videoDrivers = ["nvidia"];
+    xserver = {
+      enable = true;
+      videoDrivers = ["nvidia"];
+      displayManager.gdm.wayland = true;  # Enable Wayland
+    };
   };
 
   environment.systemPackages = with pkgs; [
-    nvtop  # NVIDIA process monitor
+    nvtop
+    glxinfo  # For debugging GPU issues
+    vulkan-tools  # For testing Vulkan support
   ];
 }
