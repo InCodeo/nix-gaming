@@ -15,8 +15,8 @@
       # monospace fonts
       jetbrains-mono
 
-      # nerdfonts - using new namespace
-      nerd-fonts.jetbrainsmono
+      # Just the basic JetBrains Mono for now
+      jetbrains-mono
     ];
 
     # causes more issues than it solves
@@ -29,7 +29,7 @@
       addAll {
         serif = ["Libertinus Serif"];
         sansSerif = ["Inter"];
-        monospace = ["JetBrainsMono Nerd Font"];
+        monospace = ["JetBrains Mono"];  # Changed this to not reference Nerd Font
         emoji = [];
       };
   };
