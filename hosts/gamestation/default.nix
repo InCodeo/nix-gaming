@@ -1,12 +1,11 @@
 {
   pkgs,
   lib,
-  config,  # Added this
+  config,
   ...
 }: {
   imports = [
-    ./hardware-configuration.nix
-    ../io/powersave.nix
+    ./hardware-configuration.nix  # This is crucial for your specific hardware
   ];
 
   boot = {
