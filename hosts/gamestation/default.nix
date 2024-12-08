@@ -8,6 +8,12 @@
     ./hardware-configuration.nix
   ];
 
+  # Add NVIDIA license acceptance
+  nixpkgs.config = {
+    allowUnfree = true;
+    nvidia.acceptLicense = true;
+  };
+
   boot = {
     kernelPackages = lib.mkForce pkgs.linuxPackages_latest;
     
@@ -15,18 +21,15 @@
     extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
   };
 
-  # Essential NVIDIA configuration - modified for GTX 970
+  # Rest of your configuration remains the same
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidia_x11_legacy470;  # Using legacy driver
+    package = config.boot.kernelPackages.nvidia_x11_legacy470;
     modesetting.enable = true;
-    prime.sync.enable = false;  # Disable PRIME as this is a desktop
-    powerManagement.enable = false;  # Desktop GPU doesn't need power management
+    prime.sync.enable = false;
+    powerManagement.enable = false;
   };
-
-  # Allow unfree packages (needed for NVIDIA)
-  nixpkgs.config.allowUnfree = true;
 
   networking.hostName = "gamestation";
 
@@ -35,13 +38,13 @@
     xserver = {
       enable = true;
       videoDrivers = ["nvidia"];
-      displayManager.gdm.wayland = true;  # Enable Wayland
+      displayManager.gdm.wayland = true;
     };
   };
 
   environment.systemPackages = with pkgs; [
-    nvtopPackages.full  # Updated from nvtop
-    glxinfo  # For debugging GPU issues
-    vulkan-tools  # For testing Vulkan support
+    nvtopPackages.full
+    glxinfo
+    vulkan-tools
   ];
 }
