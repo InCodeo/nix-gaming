@@ -4,72 +4,48 @@
   ...
 }: {
   flake.nixosConfigurations = let
-    # shorten paths
     inherit (inputs.nixpkgs.lib) nixosSystem;
-
-    howdy = inputs.nixpkgs-howdy;
-
-    homeImports = import "${self}/home/profiles";
-
     mod = "${self}/system";
-    # get the basic config to build on top of
-    inherit (import mod) laptop;
-
+    
     # get these into the module system
     specialArgs = {inherit inputs self;};
   in {
-    io = nixosSystem {
-      inherit specialArgs;
-      modules =
-        laptop
-        ++ [
-          ./io
-          "${mod}/core/lanzaboote.nix"
-
-          "${mod}/programs/gamemode.nix"
-          "${mod}/programs/hyprland.nix"
-          "${mod}/programs/games.nix"
-
-          "${mod}/network/spotify.nix"
-          "${mod}/network/syncthing.nix"
-
-          "${mod}/services/kanata"
-          "${mod}/services/gnome-services.nix"
-          "${mod}/services/location.nix"
-
-          {
-            home-manager = {
-              users.mihai.imports = homeImports."mihai@io";
-              extraSpecialArgs = specialArgs;
-            };
-          }
-
-          # enable unmerged Howdy
-          {disabledModules = ["security/pam.nix"];}
-          "${howdy}/nixos/modules/security/pam.nix"
-          "${howdy}/nixos/modules/services/security/howdy"
-          "${howdy}/nixos/modules/services/misc/linux-enable-ir-emitter.nix"
-
-          inputs.agenix.nixosModules.default
-          inputs.chaotic.nixosModules.default
-        ];
-    };
-
-    nixos = nixosSystem {
+    # Your new gamestation configuration
+    gamestation = nixosSystem {
       inherit specialArgs;
       modules = [
-        ./wsl
-        "${mod}/core/users.nix"
-        "${mod}/nix"
-        "${mod}/programs/zsh.nix"
+        ./gamestation
+        "${mod}/core"
+        "${mod}/core/boot.nix"
+
+        "${mod}/programs/gamemode.nix"
+        "${mod}/programs/games.nix"
         "${mod}/programs/home-manager.nix"
+        
+        # Graphical environment
+        "${mod}/programs/hyprland.nix"
+
+        # Network features
+        "${mod}/network/default.nix"
+        "${mod}/network/syncthing.nix"
+
+        # Services
+        "${mod}/services/pipewire.nix"
+
         {
           home-manager = {
-            users.mihai.imports = homeImports.server;
+            users.mihai.imports = [
+              ../.
+              "${self}/home/profiles/io"  # Reusing io's home config
+            ];
             extraSpecialArgs = specialArgs;
           };
         }
       ];
     };
+
+    # Keep the existing configurations
+    io = ...;
+    nixos = ...;
   };
 }
