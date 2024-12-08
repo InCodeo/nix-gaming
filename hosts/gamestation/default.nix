@@ -1,53 +1,37 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}: {
-  imports = [
-    ./hardware-configuration.nix
-  ];
+{ config, pkgs, lib, ... }: {
+  # First, disable the default NVIDIA driver
+  hardware.nvidia.package = lib.mkForce null;
 
-  # Add NVIDIA configuration with broken packages allowed
+  # Then configure only what we need
+  hardware.nvidia = {
+    open = false;
+    nvidiaSettings = true;
+    # Force the legacy package
+    package = lib.mkForce config.boot.kernelPackages.nvidia_x11_legacy470;
+    modesetting.enable = true;
+    prime.sync.enable = false;
+    powerManagement.enable = false;
+    forceFullCompositionPipeline = true;
+  };
+
+  # Make sure we're using consistent kernel packages
+  boot = {
+    kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
+    kernelModules = [ "nvidia" ];
+    extraModulePackages = with config.boot.kernelPackages; [ 
+      (lib.mkForce nvidia_x11_legacy470)
+    ];
+  };
+
+  # Also explicitly disable the newer driver in nixpkgs
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
     nvidia.acceptLicense = true;
-  };
-
-  boot = {
-    kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;  # Use a specific kernel version
-    
-    kernelModules = ["nvidia"];
-    extraModulePackages = [config.boot.kernelPackages.nvidia_x11];
-  };
-
-  # NVIDIA configuration for GTX 970
-  hardware.nvidia = {
-    open = false;
-    nvidiaSettings = true;
-    # Use the 470 series driver which is known to work with GTX 970
-    package = pkgs.linuxPackages_6_1.nvidia_x11_legacy470;
-    modesetting.enable = true;
-    prime.sync.enable = false;
-    powerManagement.enable = false;
-    forceFullCompositionPipeline = true;  # Can help with screen tearing
-  };
-
-  networking.hostName = "gamestation";
-
-  services = {
-    fstrim.enable = true;
-    xserver = {
-      enable = true;
-      videoDrivers = ["nvidia"];
-      displayManager.gdm.wayland = true;
+    packageOverrides = pkgs: {
+      linuxPackages_6_1 = pkgs.linuxPackages_6_1.override {
+        nvidia_x11 = null;
+      };
     };
   };
-
-  environment.systemPackages = with pkgs; [
-    nvtopPackages.full
-    glxinfo
-    vulkan-tools
-  ];
 }
