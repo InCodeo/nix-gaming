@@ -22,7 +22,7 @@
         "${mod}/programs/games.nix"
         "${mod}/programs/home-manager.nix"
         
-        # Graphical environment
+        # Graphical environment 
         "${mod}/programs/hyprland.nix"
 
         # Network features
@@ -43,9 +43,5 @@
         }
       ];
     };
-
-    # Keep the existing configurations
-    io = ...;
-    nixos = ...;
   };
 }
