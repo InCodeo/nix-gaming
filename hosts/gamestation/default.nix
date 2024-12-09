@@ -8,14 +8,21 @@
     ./hardware-configuration.nix
   ];
 
-  # Add NVIDIA configuration with broken packages allowed
+  # Use GRUB for BIOS boot
+  boot.loader = {
+    grub = {
+      enable = true;
+      device = "/dev/nvme0n1";  # Install GRUB to the MBR of your NVMe drive
+      efiSupport = false;
+    };
+  };
+
+  # Rest of your configuration...
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
     nvidia.acceptLicense = true;
   };
-
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   boot = {
     kernelPackages = lib.mkForce pkgs.linuxPackages_6_1;
@@ -23,7 +30,6 @@
     extraModulePackages = [ config.boot.kernelPackages.nvidia_x11_legacy470 ];
   };
 
-  # NVIDIA configuration for GTX 970
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
