@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  lib,
   ...
 }: {
   boot = {
@@ -21,10 +22,13 @@
       "rd.udev.log_level=3"
     ];
 
+    # Remove the systemd-boot configuration
     loader = {
-      # systemd-boot on UEFI
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = true;
+      grub = {
+        enable = true;
+        device = "/dev/nvme0n1";
+        efiSupport = false;
+      };
     };
 
     plymouth.enable = true;
