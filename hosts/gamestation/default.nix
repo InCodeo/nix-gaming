@@ -40,9 +40,13 @@
     forceFullCompositionPipeline = true;
   };
 
-  networking.hostName = "gamestation";
+  networking = {
+    hostName = "gamestation";
+    interfaces.enp4s0.useDHCP = true;
+  };
 
   services = {
+    hostnamed.enable = true;
     fstrim.enable = true;
     xserver = {
       enable = true;
