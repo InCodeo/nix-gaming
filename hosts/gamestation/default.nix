@@ -54,9 +54,6 @@
     };
   };
 
-  systemd.hostnamed.enable = true;
-
-
   environment.systemPackages = with pkgs; [
     nvtopPackages.full
     glxinfo
