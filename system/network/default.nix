@@ -11,8 +11,6 @@
     };
   };
 
-  systemd.services.NetworkManager-wait-online.enable = false;
-
   services = {
     openssh = {
       enable = true;
@@ -24,5 +22,12 @@
       enable = true;
       dnsovertls = "opportunistic";
     };
+
+    dbus = {
+      enable = true;
+      packages = [ pkgs.dbus ];
+    };
   };
+
+  systemd.services.NetworkManager-wait-online.enable = false;
 }
