@@ -46,7 +46,6 @@
   };
 
   services = {
-    hostnamed.enable = true;
     fstrim.enable = true;
     xserver = {
       enable = true;
@@ -54,6 +53,9 @@
       displayManager.gdm.wayland = true;
     };
   };
+
+  systemd.hostnamed.enable = true;
+
 
   environment.systemPackages = with pkgs; [
     nvtopPackages.full
