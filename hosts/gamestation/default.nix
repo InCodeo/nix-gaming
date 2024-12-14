@@ -68,13 +68,13 @@
     vulkan-tools
     
     # Plasma/KDE additions
-    libsForQt6.qt6.qtwayland
-    plasma6Packages.kate
-    plasma6Packages.konsole
-    plasma6Packages.plasma-workspace
-    plasma6Packages.plasma-desktop
-    plasma6Packages.plasma-nm
-    plasma6Packages.plasma-pa
+    pkgs.libsForQt6.qt6.qtwayland
+    pkgs.plasma6Packages.kate
+    pkgs.plasma6Packages.konsole
+    pkgs.plasma6Packages.plasma-workspace
+    pkgs.plasma6Packages.plasma-desktop
+    pkgs.plasma6Packages.plasma-nm
+    pkgs.plasma6Packages.plasma-pa
   ];
 
   # Disable services that might conflict
