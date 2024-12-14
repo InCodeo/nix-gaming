@@ -44,19 +44,19 @@
     interfaces.enp4s0.useDHCP = true;
   };
 
+  programs.seahorse.enable = false;
+
   services = {
     fstrim.enable = true;
     xserver = {
       enable = true;
       videoDrivers = ["nvidia"];
       
-      # Change from GDM to SDDM
       displayManager.sddm = {
         enable = true;
         wayland.enable = true;
       };
       
-      # Enable Plasma 6
       desktopManager.plasma6.enable = true;
     };
   };
@@ -65,9 +65,10 @@
     nvtopPackages.full
     glxinfo
     vulkan-tools
+    
+
   ];
 
-  programs.seahorse.enable = false;
-
+  # Disable services that might conflict
   services.xserver.displayManager.gdm.enable = lib.mkForce false;
 }
