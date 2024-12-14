@@ -61,22 +61,9 @@
     };
   };
 
-  # Add common KDE/Plasma packages
   environment.systemPackages = with pkgs; [
     nvtopPackages.full
     glxinfo
     vulkan-tools
-    
-    # Plasma/KDE additions
-    pkgs.libsForQt6.qt6.qtwayland
-    pkgs.plasma6Packages.kate
-    pkgs.plasma6Packages.konsole
-    pkgs.plasma6Packages.plasma-workspace
-    pkgs.plasma6Packages.plasma-desktop
-    pkgs.plasma6Packages.plasma-nm
-    pkgs.plasma6Packages.plasma-pa
   ];
-
-  # Disable services that might conflict
-  services.xserver.displayManager.gdm.enable = lib.mkForce false;
 }
