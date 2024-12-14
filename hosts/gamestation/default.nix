@@ -44,8 +44,6 @@
     interfaces.enp4s0.useDHCP = true;
   };
 
-  programs.seahorse.enable = false;
-
   services = {
     fstrim.enable = true;
     xserver = {
@@ -68,6 +66,8 @@
     
 
   ];
+
+  programs.seahorse.enable = lib.mkForce false;
 
   # Disable services that might conflict
   services.xserver.displayManager.gdm.enable = lib.mkForce false;
