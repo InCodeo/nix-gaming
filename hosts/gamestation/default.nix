@@ -66,4 +66,8 @@
     glxinfo
     vulkan-tools
   ];
+
+  programs.seahorse.enable = false;
+
+  services.xserver.displayManager.gdm.enable = lib.mkForce false;
 }
