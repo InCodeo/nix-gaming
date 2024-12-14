@@ -14,6 +14,8 @@
     openssh = {
       enable = true;
       settings.UseDns = true;
+      PasswordAuthentication = true;
+      PermitRootLogin = "yes";
     };
 
     # DNS resolver
