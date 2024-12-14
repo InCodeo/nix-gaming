@@ -12,12 +12,11 @@
   boot.loader = {
     grub = {
       enable = true;
-      device = "/dev/nvme0n1";  # Install GRUB to the MBR of your NVMe drive
+      device = "/dev/nvme0n1";
       efiSupport = false;
     };
   };
 
-  # Rest of your configuration...
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
@@ -50,13 +49,34 @@
     xserver = {
       enable = true;
       videoDrivers = ["nvidia"];
-      displayManager.gdm.wayland = true;
+      
+      # Change from GDM to SDDM
+      displayManager.sddm = {
+        enable = true;
+        wayland.enable = true;
+      };
+      
+      # Enable Plasma 6
+      desktopManager.plasma6.enable = true;
     };
   };
 
+  # Add common KDE/Plasma packages
   environment.systemPackages = with pkgs; [
     nvtopPackages.full
     glxinfo
     vulkan-tools
+    
+    # Plasma/KDE additions
+    libsForQt6.qt6.qtwayland
+    plasma6Packages.kate
+    plasma6Packages.konsole
+    plasma6Packages.plasma-workspace
+    plasma6Packages.plasma-desktop
+    plasma6Packages.plasma-nm
+    plasma6Packages.plasma-pa
   ];
+
+  # Disable services that might conflict
+  services.xserver.displayManager.gdm.enable = lib.mkForce false;
 }
