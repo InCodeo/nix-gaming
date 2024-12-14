@@ -31,7 +31,7 @@
               ../home/programs/gtk.nix
               ../home/programs/qt.nix
               ../home/programs/games
-              ../home/programs/wayland/hyprland
+              # ../home/programs/wayland/hyprland
             ];
             extraSpecialArgs = specialArgs;
           };
