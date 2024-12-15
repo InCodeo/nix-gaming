@@ -103,7 +103,6 @@
 
     # Development
     vscode
-    parsec
 
     # System tools
     gnome.gnome-system-monitor
