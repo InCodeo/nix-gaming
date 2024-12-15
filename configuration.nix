@@ -58,7 +58,7 @@
     zsh oh-my-zsh
     # Network tools
     tailscale
-    lspci
+    pciutils
   ];
 
   services.openssh = {
