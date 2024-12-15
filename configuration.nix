@@ -52,6 +52,11 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
+    # Core utilities
+    wget vim git curl
+    # Shell
+    zsh oh-my-zsh
+    # Network tools
     tailscale
   ];
 
@@ -69,6 +74,24 @@
   networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.trustedInterfaces = [ "tailscale0"];
   networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+
+    # ZSH Configuration
+  programs.zsh = {
+    enable = true;
+    ohMyZsh = {
+      enable = true;
+      plugins = [ "git" "docker" "sudo" ];
+      theme = "robbyrussell";
+    };
+    shellInit = ''
+      ${builtins.replaceStrings ["\r\n"] ["\n"] (builtins.readFile ./functions.zsh)}
+      ${builtins.replaceStrings ["\r\n"] ["\n"] (builtins.readFile ./client-functions.zsh)}
+    '';
+  };
+
+  # Set ZSH as default shell for root
+  users.defaultUserShell = pkgs.zsh;
+  users.users.root.shell = pkgs.zsh;
 
   system.stateVersion = "24.05"; 
 
