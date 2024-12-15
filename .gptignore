@@ -441,3 +441,4 @@ jspm_packages/
 # not needed for nix
 *.kbd
 flake.lock
+configuration.nix
