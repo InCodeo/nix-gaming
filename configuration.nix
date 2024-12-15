@@ -1,86 +1,152 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-    ];
+  imports = [ ./hardware-configuration.nix ];
 
-  # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/nvme0n1";
-  boot.loader.grub.useOSProber = true;
+  # Enable flakes for future use
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
-  networking.hostName = "nixos";
+  # Bootloader and kernel
+  boot = {
+    loader.grub = {
+      enable = true;
+      device = "/dev/nvme0n1";
+      useOSProber = true;
+    };
+    kernelPackages = pkgs.linuxPackages_latest;
+    kernelModules = [ "nvidia" ];
+  };
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+  # Nvidia configuration
+  hardware.nvidia = {
+    open = false;
+    nvidiaSettings = true;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
+    modesetting.enable = true;
+    forceFullCompositionPipeline = true;
+  };
 
-  # Set your time zone.
+  # Networking
+  networking = {
+    hostName = "nixos";
+    networkmanager.enable = true;
+    firewall = {
+      allowedTCPPorts = [ 22 ];
+      trustedInterfaces = [ "tailscale0" ];
+      allowedUDPPorts = [ config.services.tailscale.port ];
+      # Required for Tailscale
+      checkReversePath = "loose";
+    };
+  };
+
+  # Time and Locale
   time.timeZone = "Australia/Sydney";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_AU.UTF-8";
-
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_AU.UTF-8";
-    LC_IDENTIFICATION = "en_AU.UTF-8";
-    LC_MEASUREMENT = "en_AU.UTF-8";
-    LC_MONETARY = "en_AU.UTF-8";
-    LC_NAME = "en_AU.UTF-8";
-    LC_NUMERIC = "en_AU.UTF-8";
-    LC_PAPER = "en_AU.UTF-8";
-    LC_TELEPHONE = "en_AU.UTF-8";
-    LC_TIME = "en_AU.UTF-8";
+  i18n = {
+    defaultLocale = "en_AU.UTF-8";
+    extraLocaleSettings = {
+      LC_ADDRESS = "en_AU.UTF-8";
+      LC_IDENTIFICATION = "en_AU.UTF-8";
+      LC_MEASUREMENT = "en_AU.UTF-8";
+      LC_MONETARY = "en_AU.UTF-8";
+      LC_NAME = "en_AU.UTF-8";
+      LC_NUMERIC = "en_AU.UTF-8";
+      LC_PAPER = "en_AU.UTF-8";
+      LC_TELEPHONE = "en_AU.UTF-8";
+      LC_TIME = "en_AU.UTF-8";
+    };
   };
 
-  # Configure keymap in X11
-  services.xserver.xkb = {
-    layout = "au";
-    variant = "";
+  # X11 and Desktop Environment
+  services.xserver = {
+    enable = true;
+    videoDrivers = [ "nvidia" ];
+    xkb = {
+      layout = "au";
+      variant = "";
+    };
+    
+    # KDE Plasma
+    displayManager.sddm.enable = true;
+    desktopManager.plasma6.enable = true;
   };
 
+  # Audio
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    jack.enable = true;
+  };
+
+  # User Configuration
   users.users.dev = {
     isNormalUser = true;
     description = "dev";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [];
+    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
+    shell = pkgs.zsh;
+    packages = with pkgs; [
+      firefox
+      steam
+    ];
   };
-
   services.getty.autologinUser = "dev";
 
+  # System Packages
   nixpkgs.config.allowUnfree = true;
-
   environment.systemPackages = with pkgs; [
     # Core utilities
     wget vim git curl
-    # Shell
-    zsh oh-my-zsh
-    # Network tools
-    tailscale
+    htop btop
+    unzip
+    
+    # Development
+    vscode
+    
+    # System tools
+    gnome.gnome-system-monitor
+    
+    # Gaming
+    gamemode
+    mangohud
   ];
 
-  services.openssh = {
-    enable = true;
-    settings = {
-      PasswordAuthentication = true;
-      PermitRootLogin = "yes";
-      X11Forwarding = false;
+  # Services
+  services = {
+    openssh = {
+      enable = true;
+      settings = {
+        PasswordAuthentication = true;
+        PermitRootLogin = "yes";
+        X11Forwarding = false;
+      };
+      ports = [22];
     };
-    ports = [22];
+    
+    tailscale.enable = true;
+
+    # Enable flatpak support
+    flatpak.enable = true;
   };
-  services.tailscale.enable = true;
 
-  networking.firewall.allowedTCPPorts = [ 22 ];
-  networking.firewall.trustedInterfaces = [ "tailscale0"];
-  networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+  # Steam
+  programs = {
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true;
+      dedicatedServer.openFirewall = true;
+    };
 
-    # ZSH Configuration
+    firefox.enable = true;
+  };
+
+  # ZSH Configuration
   programs.zsh = {
     enable = true;
     ohMyZsh = {
       enable = true;
-      plugins = [ "git" "docker" "sudo" ];
+      plugins = [ "git" "docker" "sudo" "kubectl" ];
       theme = "robbyrussell";
     };
     shellInit = ''
@@ -89,20 +155,9 @@
     '';
   };
 
-  # Set ZSH as default shell for root
+  # Set ZSH as default shell
   users.defaultUserShell = pkgs.zsh;
   users.users.root.shell = pkgs.zsh;
 
-    # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
-
-  # Install firefox.
-  programs.firefox.enable = true;
-
-  system.stateVersion = "24.05"; 
-
+  system.stateVersion = "24.05";
 }
