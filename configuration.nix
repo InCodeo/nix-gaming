@@ -84,7 +84,7 @@
   users.users.dev = {
     isNormalUser = true;
     description = "dev";
-    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" "video" "input" ];
     shell = pkgs.zsh;
     packages = with pkgs; [
       firefox
