@@ -93,8 +93,12 @@
   };
   services.getty.autologinUser = "dev";
 
+  nixpkgs.config = {
+    allowUnfree = true;
+    allowBroken = true;
+    nvidia.acceptLicense = true;
+  };
   # System Packages
-  nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     # Core utilities
     wget vim git curl
