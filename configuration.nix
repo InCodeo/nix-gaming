@@ -21,8 +21,7 @@
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;  # Use stable instead of legacy_535
-
+    package = config.boot.kernelPackages.nvidiaPackages.stable;
     modesetting.enable = true;
     forceFullCompositionPipeline = true;
   };
@@ -32,9 +31,9 @@
     hostName = "nixos";
     networkmanager.enable = true;
     firewall = {
-      allowedTCPPorts = [ 22 ];
+      allowedTCPPorts = [ 22 47984 47989 47990 48010 ];
+      allowedUDPPorts = [ config.services.tailscale.port 47998 47999 48000 48002 ];
       trustedInterfaces = [ "tailscale0" ];
-      allowedUDPPorts = [ config.services.tailscale.port ];
       # Required for Tailscale
       checkReversePath = "loose";
     };
@@ -67,7 +66,7 @@
     };
   };
 
-    # Enable the KDE Plasma Desktop Environment.
+  # Enable the KDE Plasma Desktop Environment.
   services.displayManager.sddm.enable = true;
   services.desktopManager.plasma6.enable = true;
 
@@ -111,6 +110,7 @@
     # Gaming
     gamemode
     mangohud
+    sunshine
   ];
 
   # Services
@@ -129,6 +129,15 @@
 
     # Enable flatpak support
     flatpak.enable = true;
+
+    # Sunshine service
+    sunshine = {
+      enable = true;
+      settings = {
+        port = 47989;
+        allow_all = true;
+      };
+    };
   };
 
   # Steam
