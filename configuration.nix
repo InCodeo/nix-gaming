@@ -31,7 +31,7 @@
     hostName = "nixos";
     networkmanager.enable = true;
     firewall = {
-      allowedTCPPorts = [ 22 47984 47989 47990 48010 ];
+      allowedTCPPorts = [ 22 47984 47989 47990 48010 3389 ];
       allowedUDPPorts = [ config.services.tailscale.port 47998 47999 48000 48002 ];
       trustedInterfaces = [ "tailscale0" ];
       # Required for Tailscale
@@ -180,6 +180,10 @@
   systemd.tmpfiles.rules = [
     "d /var/lib/sunshine 0755 root root -"
   ];
+
+  # Add this to your configuration.nix
+  services.xrdp.enable = true;
+  services.xrdp.defaultWindowManager = "startplasma-x11";
 
   system.stateVersion = "24.05";
 }
