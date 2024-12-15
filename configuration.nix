@@ -133,17 +133,7 @@
     # Sunshine service
     sunshine = {
       enable = true;
-      settings = {
-        port = 47989;
-        allow_all = true;
-        # Add SSDP discovery - helps Moonlight find Sunshine
-        origin_pin_allowed = true;
-        origin_web_ui_allowed = true;
-        upnp = true;
-        # File locations
-        file_state = "/var/lib/sunshine/sunshine_state.json";
-        credentials_file = "/var/lib/sunshine/credentials.json";
-      };
+      openFirewall = true;
     };
   };
 
