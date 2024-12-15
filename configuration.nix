@@ -136,6 +136,13 @@
       settings = {
         port = 47989;
         allow_all = true;
+        # Add SSDP discovery - helps Moonlight find Sunshine
+        origin_pin_allowed = true;
+        origin_web_ui_allowed = true;
+        upnp = true;
+        # File locations
+        file_state = "/var/lib/sunshine/sunshine_state.json";
+        credentials_file = "/var/lib/sunshine/credentials.json";
       };
     };
   };
@@ -168,6 +175,11 @@
   # Set ZSH as default shell
   users.defaultUserShell = pkgs.zsh;
   users.users.root.shell = pkgs.zsh;
+
+  # Add this to ensure Sunshine can write its state files
+  systemd.tmpfiles.rules = [
+    "d /var/lib/sunshine 0755 root root -"
+  ];
 
   system.stateVersion = "24.05";
 }
