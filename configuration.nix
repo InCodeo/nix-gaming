@@ -13,7 +13,7 @@
       device = "/dev/nvme0n1";
       useOSProber = true;
     };
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_6_1;
     kernelModules = [ "nvidia" ];
   };
 
@@ -21,7 +21,8 @@
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidia_x11_legacy470;
+    package = config.boot.kernelPackages.nvidiaPackages.stable;  # Use stable instead of legacy_535
+
     modesetting.enable = true;
     forceFullCompositionPipeline = true;
   };
@@ -93,12 +94,8 @@
   };
   services.getty.autologinUser = "dev";
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    allowBroken = true;
-    nvidia.acceptLicense = true;
-  };
   # System Packages
+  nixpkgs.config.allowUnfree = true;
   environment.systemPackages = with pkgs; [
     # Core utilities
     wget vim git curl
