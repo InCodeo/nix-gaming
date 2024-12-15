@@ -1,7 +1,7 @@
 {
   description = "Basic NixOS Config";
 
-  inputs.nixpkgs.url = "nixpkgs/nixos-24.05";  # Use current stable version
+  inputs.nixpkgs.url = "nixpkgs/nixos-23.11";  # Use current stable version
   
   outputs = { self, nixpkgs }: {
     nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
