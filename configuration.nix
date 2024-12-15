@@ -93,6 +93,16 @@
   users.defaultUserShell = pkgs.zsh;
   users.users.root.shell = pkgs.zsh;
 
+    # Enable the X11 windowing system.
+  services.xserver.enable = true;
+
+  # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
+
+  # Install firefox.
+  programs.firefox.enable = true;
+
   system.stateVersion = "24.05"; 
 
 }
