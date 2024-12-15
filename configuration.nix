@@ -64,11 +64,11 @@
       layout = "au";
       variant = "";
     };
-    
-    # KDE Plasma
-    displayManager.sddm.enable = true;
-    desktopManager.plasma6.enable = true;
   };
+
+    # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Audio
   security.rtkit.enable = true;
