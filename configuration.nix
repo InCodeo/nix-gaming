@@ -21,7 +21,7 @@
   hardware.nvidia = {
     open = false;
     nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.legacy_535;
+    package = config.boot.kernelPackages.nvidia_x11_legacy470;
     modesetting.enable = true;
     forceFullCompositionPipeline = true;
   };
