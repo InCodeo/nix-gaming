@@ -1,10 +1,5 @@
 { config, pkgs, ... }:
 
-let
-  obs = pkgs.obs-studio.overrideAttrs (oldAttrs: {
-    withV4l2sink = true;
-  });
-in
 {
   imports = [ ./hardware-configuration.nix ];
 
@@ -19,7 +14,7 @@ in
       useOSProber = true;
     };
     kernelPackages = pkgs.linuxPackages_6_1;
-    kernelModules = [ "nvidia" "v4l2loopback" ];  # Added v4l2loopback
+    kernelModules = [ "nvidia" "v4l2loopback" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
 
@@ -70,11 +65,14 @@ in
       layout = "au";
       variant = "";
     };
-    # Explicitly set to use X11
-    displayManager = {
-      defaultSession = "plasma";
-      sddm.enable = true;
-      sddm.wayland.enable = false;  # Disable Wayland
+  };
+
+  # Display Manager and Session settings
+  services.displayManager = {
+    defaultSession = "plasma";
+    sddm = {
+      enable = true;
+      wayland.enable = false;  # Disable Wayland
     };
   };
 
@@ -120,7 +118,7 @@ in
 
     # Streaming and Video
     discord
-    obs
+
     v4l-utils
     ffmpeg
 
@@ -200,10 +198,7 @@ in
     defaultWindowManager = "startplasma-x11";
   };
 
-  # Virtual camera module configuration
-  boot.extraModprobeConfig = ''
-    options v4l2loopback exclusive_caps=1 card_label="OBS Virtual Camera"
-  '';
+
 
   system.stateVersion = "24.05";
 }
