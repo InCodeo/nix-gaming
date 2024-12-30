@@ -74,10 +74,7 @@
   };
 
   # Enable the KDE Plasma Desktop Environment with X11
-  services.desktopManager.plasma6 = {
-    enable = true;
-    useQtScaling = true;
-  };
+  services.desktopManager.plasma6.enable = true;
 
   # Audio
   security.rtkit.enable = true;
