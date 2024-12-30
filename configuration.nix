@@ -1,5 +1,10 @@
 { config, pkgs, ... }:
 
+let
+  obs = pkgs.obs-studio.overrideAttrs (oldAttrs: {
+    withV4l2sink = true;
+  });
+in
 {
   imports = [ ./hardware-configuration.nix ];
 
@@ -14,7 +19,7 @@
       useOSProber = true;
     };
     kernelPackages = pkgs.linuxPackages_6_1;
-    kernelModules = [ "nvidia" "v4l2loopback" ];
+    kernelModules = [ "nvidia" "v4l2loopback" ];  # Added v4l2loopback
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
 
@@ -65,14 +70,11 @@
       layout = "au";
       variant = "";
     };
-  };
-
-  # Display Manager and Session settings
-  services.displayManager = {
-    defaultSession = "plasma";
-    sddm = {
-      enable = true;
-      wayland.enable = false;  # Disable Wayland
+    # Explicitly set to use X11
+    displayManager = {
+      defaultSession = "plasma";
+      sddm.enable = true;
+      sddm.wayland.enable = false;  # Disable Wayland
     };
   };
 
@@ -118,13 +120,7 @@
 
     # Streaming and Video
     discord
-    (obs-studio.override {
-      plugins = with obs-studio-plugins; [
-        obs-gstreamer
-        obs-v4l2sink
-        obs-virtual-cam
-      ];
-    })
+    obs
     v4l-utils
     ffmpeg
 
