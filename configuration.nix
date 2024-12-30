@@ -107,6 +107,9 @@
     # System tools
     gnome.gnome-system-monitor
 
+    discord
+    obs-studio
+
     # Gaming
     gamemode
     mangohud
