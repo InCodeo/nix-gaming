@@ -118,7 +118,13 @@
 
     # Streaming and Video
     discord
-    obs-studio
+    (obs-studio.override {
+      plugins = with obs-studio-plugins; [
+        obs-gstreamer
+        obs-v4l2sink
+        obs-virtual-cam
+      ];
+    })
     v4l-utils
     ffmpeg
 
