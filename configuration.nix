@@ -14,7 +14,7 @@
       useOSProber = true;
     };
     kernelPackages = pkgs.linuxPackages_6_1;
-    kernelModules = [ "nvidia" "v4l2loopback" ];  # Added v4l2loopback
+    kernelModules = [ "nvidia" "v4l2loopback" ];
     extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
 
@@ -65,11 +65,14 @@
       layout = "au";
       variant = "";
     };
-    # Explicitly set to use X11
-    displayManager = {
-      defaultSession = "plasma";
-      sddm.enable = true;
-      sddm.wayland.enable = false;  # Disable Wayland
+  };
+
+  # Display Manager and Session settings
+  services.displayManager = {
+    defaultSession = "plasma";
+    sddm = {
+      enable = true;
+      wayland.enable = false;  # Disable Wayland
     };
   };
 
