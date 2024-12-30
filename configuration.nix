@@ -14,7 +14,8 @@
       useOSProber = true;
     };
     kernelPackages = pkgs.linuxPackages_6_1;
-    kernelModules = [ "nvidia" ];
+    kernelModules = [ "nvidia" "v4l2loopback" ];  # Added v4l2loopback
+    extraModulePackages = with config.boot.kernelPackages; [ v4l2loopback ];
   };
 
   # Nvidia configuration
@@ -64,11 +65,19 @@
       layout = "au";
       variant = "";
     };
+    # Explicitly set to use X11
+    displayManager = {
+      defaultSession = "plasma";
+      sddm.enable = true;
+      sddm.wayland.enable = false;  # Disable Wayland
+    };
   };
 
-  # Enable the KDE Plasma Desktop Environment.
-  services.displayManager.sddm.enable = true;
-  services.desktopManager.plasma6.enable = true;
+  # Enable the KDE Plasma Desktop Environment with X11
+  services.desktopManager.plasma6 = {
+    enable = true;
+    useQtScaling = true;
+  };
 
   # Audio
   security.rtkit.enable = true;
@@ -107,14 +116,23 @@
     # System tools
     gnome.gnome-system-monitor
 
+    # Streaming and Video
     discord
     obs-studio
+    v4l-utils
+    ffmpeg
 
     # Gaming
     gamemode
     mangohud
     sunshine
   ];
+
+  # Video device rules
+  services.udev.extraRules = ''
+    KERNEL=="video[0-9]*", GROUP="video", TAG+="systemd"
+    KERNEL=="vchiq",GROUP="video",MODE="0660"
+  '';
 
   # Services
   services = {
@@ -174,9 +192,16 @@
     "d /var/lib/sunshine 0755 root root -"
   ];
 
-  # Add this to your configuration.nix
-  services.xrdp.enable = true;
-  services.xrdp.defaultWindowManager = "startplasma-x11";
+  # RDP Configuration
+  services.xrdp = {
+    enable = true;
+    defaultWindowManager = "startplasma-x11";
+  };
+
+  # Virtual camera module configuration
+  boot.extraModprobeConfig = ''
+    options v4l2loopback exclusive_caps=1 card_label="OBS Virtual Camera"
+  '';
 
   system.stateVersion = "24.05";
 }
